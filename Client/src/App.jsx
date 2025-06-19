@@ -4,10 +4,15 @@ import {createBrowserRouter,RouterProvider,} from "react-router";
 import Navbar from './Components/Navbar';
 import Footer from './Components/Footer';
 import Home from '../src/Components/Home';
+import CreateTrip  from './Components/CreateTrip';
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <><Navbar/><Home/></>,
+    element: <><Home/></>,
+  },
+  {
+    path: '/create-trip',
+    element: <><CreateTrip/></>
   },
 ]);
 function App() {
@@ -15,6 +20,7 @@ function App() {
 
   return (
     <>
+      <Navbar></Navbar>
       <RouterProvider router={router}></RouterProvider>
       <Footer></Footer>
     </>

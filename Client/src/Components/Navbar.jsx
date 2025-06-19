@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import Logo from '../assets/Logo.svg'
-import { useNavigate } from 'react-router'
+// import { useNavigate } from 'react-router' // No longer needed
 
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
-  const navigator = useNavigate();
+  // const navigator = useNavigate(); // Remove this
 
   return (
     <>
@@ -13,34 +13,34 @@ const Navbar = () => {
           <div className="flex justify-between h-16">
             {/* Left side - Logo and Name */}
             <div className="flex items-center">
-              <div className="flex-shrink-0 flex items-center">
+              <a href="/" className="flex-shrink-0 flex items-center" style={{cursor:'pointer'}}>
                 <img src={Logo} alt="TravelEase Logo" className="h-8 w-auto" />
                 <span className="ml-3 text-2xl font-bold text-black tracking-tight font-sans">
                   TravelEase
                 </span>
-              </div>
+              </a>
             </div>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4">
-              <button
+              <a
                 className="rounded-full px-6 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-50 transition duration-150 ease-in-out border border-orange-200"
-                onClick={() => { navigator('/my-trips') }}
+                href="/my-trips"
               >
                 My Trips
-              </button>
-              <button
+              </a>
+              <a
                 className="rounded-full px-6 py-2 text-base font-medium text-white bg-orange-500 hover:bg-orange-600 transition duration-150 ease-in-out shadow-sm"
-                onClick={() => { navigator('/create-trip') }}
+                href="/create-trip"
               >
                 + Create Trip
-              </button>
-              <button
+              </a>
+              <a
                 className="rounded-full px-6 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-50 transition duration-150 ease-in-out border border-orange-200"
-                onClick={() => { navigator('/login') }}
+                href="/login"
               >
                 Login
-              </button>
+              </a>
             </div>
 
             {/* Mobile menu button */}
@@ -100,33 +100,27 @@ const Navbar = () => {
           </button>
         </div>
         <div className="px-4 py-6 space-y-4">
-          <button
-            onClick={() => { 
-              navigator('/my-trips');
-              setIsSidebarOpen(false);
-            }}
-            className="w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-50 rounded-full transition duration-150 ease-in-out border border-orange-200"
+          <a
+            href="/my-trips"
+            onClick={() => setIsSidebarOpen(false)}
+            className="w-full block text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-50 rounded-full transition duration-150 ease-in-out border border-orange-200"
           >
             My Trips
-          </button>
-          <button
-            onClick={() => { 
-              navigator('/create-trip');
-              setIsSidebarOpen(false);
-            }}
-            className="w-full text-left px-4 py-2 text-base font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-full transition duration-150 ease-in-out shadow-sm"
+          </a>
+          <a
+            href="/create-trip"
+            onClick={() => setIsSidebarOpen(false)}
+            className="w-full block text-left px-4 py-2 text-base font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-full transition duration-150 ease-in-out shadow-sm"
           >
             + Create Trip
-          </button>
-          <button
-            onClick={() => { 
-              navigator('/login');
-              setIsSidebarOpen(false);
-            }}
-            className="w-full text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-50 rounded-full transition duration-150 ease-in-out border border-orange-200"
+          </a>
+          <a
+            href="/login"
+            onClick={() => setIsSidebarOpen(false)}
+            className="w-full block text-left px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-50 rounded-full transition duration-150 ease-in-out border border-orange-200"
           >
             Login
-          </button>
+          </a>
         </div>
       </div>
 
