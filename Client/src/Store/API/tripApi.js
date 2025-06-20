@@ -13,7 +13,6 @@ export const getAllTrips = async(data)=>{
 }
 
 //For getting a Single Trip
-
 export const getTripApi = async(id) =>{
     const response = await axiosInstance.get('/get-trip', id);
     return response.data;

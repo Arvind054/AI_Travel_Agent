@@ -17,4 +17,25 @@ router.get('/create-trip', async(req, res)=>{
         res.status(401).send('Error Creating Trip', err);
     }
 });
+
+ // Get All the Trips of the user
+router.get('/all-trips', async(req, res)=>{
+   const userId = req.body;
+   try{
+
+   }catch(err){
+      res.status(401).send('Error Getting Your Trips');
+   }
+});
+
+
+//Get Details of an Individual Trip
+router.get('/get-trip', async(req, res)=>{
+    const tripid = req.body;
+    try{
+      
+    }catch(err){
+        res.status(401).send('Error Getting Your Trip Data');
+        }
+})
 module.exports = router;

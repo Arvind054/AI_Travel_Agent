@@ -4,6 +4,7 @@ import toast from 'react-hot-toast'
 import LoadingTrip from './Loaders/LoadingTrip';
 import { createTripAPI } from '../Store/API/tripApi';
 import {useNavigate} from 'react-router'
+
 //Trip categories
 const tripCategories = [
   { label: 'Solo', value: 'solo', emoji: '🧑‍🦱' },
