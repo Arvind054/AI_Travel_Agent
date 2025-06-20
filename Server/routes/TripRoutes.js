@@ -1,20 +1,20 @@
 const {Router} = require('express');
 const router = Router();
 const { GoogleGenAI } = require("@google/genai");
-const ai = new GoogleGenAI({apiKey:process.env.GOOGLE_GEMINI_API_KEY});
+const ai = new GoogleGenAI({apiKey: process.env.GOOGLE_GEMINI_API_KEY});
 
 //Create New Trip
-router.get('create-trip', async(req, res)=>{
-    const tripDetails = req.body;
+router.get('/create-trip', async(req, res)=>{
+    const tripDetails =  JSON.stringify(req.body);
     try{
-        const prompt = `Your are an Helpful Travelling Agent. Use this data of the User and Provide the hotels, and travell sources and places to visit based on the User Budget,\n ${tripDetails}`;
+        const prompt = `Your are an Helpful Travelling Agent. Create a personalized travel itinerary from Given Source to Destination. The travel dates are also provided. Output the plan in JSON format including daily itinerary, accommodations, transportation, estimated cost, and must-try food.,\n ${tripDetails}`;
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: prompt,
           });
-        res.json(response);
+        res.json(response.text);
     }catch(err){
-        res.status(401).send('Error Creating Trip');
+        res.status(401).send('Error Creating Trip', err);
     }
 });
 module.exports = router;

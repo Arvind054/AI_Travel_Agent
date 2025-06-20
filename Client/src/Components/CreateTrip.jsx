@@ -1,6 +1,10 @@
 import React, { useState } from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
-
+import toast from 'react-hot-toast'
+import LoadingTrip from './Loaders/LoadingTrip';
+import { createTripAPI } from '../Store/API/tripApi';
+import {useNavigate} from 'react-router'
+//Trip categories
 const tripCategories = [
   { label: 'Solo', value: 'solo', emoji: '🧑‍🦱' },
   { label: 'Family', value: 'family', emoji: '👨‍👩‍👧‍👦' },
@@ -8,6 +12,7 @@ const tripCategories = [
   { label: 'Friends', value: 'friends', emoji: '🧑‍🤝‍🧑' },
 ];
 
+// Trip Budget Options
 const budgetOptions = [
   { label: 'Low', value: 'low', emoji: '💸', description: 'Budget Tight' },
   { label: 'Medium', value: 'medium', emoji: '💵', description: 'Pocket Friendly' },
@@ -15,19 +20,45 @@ const budgetOptions = [
   { label: 'Luxury', value: 'luxury', emoji: '🪙', description: 'Unlimited' },
 ];
 
+
+
+
+// Create Trip  Page
 const CreateTrip = () => {
   const [category, setCategory] = useState('solo');
   const [budget, setBudget] = useState('medium');
  const [formData , setFormData] = useState([]);
-
+ const [creatingTrip, setCreatingTrip] = useState(false);
+ const navigator = useNavigate();
+ // Handle the Chnages in the user Selection.
  const handleChange = (name, value) => {
+  
   console.log(name, value);
   setFormData({ ...formData, [name]:value });
 };
-const handleSubmit = (e)=>{
+//Handle Submit
+const handleSubmit = async(e)=>{
   e.preventDefault();
-   console.log('Trip data is', formData);
+  setFormData({ ...formData, ['budget']:budget, ['category'] :category});
+  if(!formData['tittle'] || !formData['Source'] || !!formData['Destination'] || !formData['No. of Days'] || !formData['Travel Date']){
+    toast.error('All fields are Required');
+    return ;
+  }
+  setCreatingTrip(true);
+  try{
+    const tripId = await createTripAPI(formData);
+    console.log('trip id is', tripId);
+    setCreatingTrip(false);
+    navigator(`/trip/${tripId}`);
+  }catch(err){
+    toast.error('Error Creating Trip. please Try again');
+    setCreatingTrip(false);
+  }
+
 }
+ if(creatingTrip){
+  return <LoadingTrip></LoadingTrip>
+ }else{
   return (
     <div className="min-h-screen flex flex-col justify-center items-center bg-white-50 font-sans mt-10" style={{fontFamily: 'Inter, Segoe UI, sans-serif'}}>
       <div className="bg-white p-5 rounded-lg  w-full max-w-3xl flex flex-col items-start">
@@ -110,7 +141,7 @@ const handleSubmit = (e)=>{
                   type="button"
                   key={opt.value}
                   className={`flex flex-col items-center justify-center px-8 py-5 rounded-xl border-2 transition-all duration-150 shadow-sm text-xl font-semibold cursor-pointer bg-white hover:bg-orange-100 focus:outline-none ${category === opt.value ? 'border-orange-500 bg-orange-100' : 'border-gray-200'}`}
-                  onClick={() => handleChange('travelling With', opt.value)}
+                  onClick={() => handleChange('category', opt.value)}
                 >
                   <span className="text-4xl mb-2">{opt.emoji}</span>
                   <span>{opt.label}</span>
@@ -129,6 +160,8 @@ const handleSubmit = (e)=>{
       </div>
     </div>
   )
+ }
+
 }
 
 export default CreateTrip;
