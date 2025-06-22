@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete';
 import toast from 'react-hot-toast'
 import LoadingTrip from './Loaders/LoadingTrip';
 import { createTripAPI } from '../Store/API/tripApi';
 import {useNavigate} from 'react-router'
-
+import { useSelector } from 'react-redux';
+import AuthDialog from './Auth/AuthDialog'
 //Trip categories
 const tripCategories = [
   { label: 'Solo', value: 'solo', emoji: '🧑‍🦱' },
@@ -28,27 +29,51 @@ const budgetOptions = [
 const CreateTrip = () => {
   const [category, setCategory] = useState('solo');
   const [budget, setBudget] = useState('medium');
- const [formData , setFormData] = useState([]);
+ const [formData , setFormData] = useState({category: 'solo',budget:'medium'});
  const [creatingTrip, setCreatingTrip] = useState(false);
  const navigator = useNavigate();
+ const isLoggedIn = useSelector((state) => state.user.isAuthenticated);
+ const user = useSelector((state)=>state.user.user);
+ const [openDialog, setOpenDialog] = useState(false);
+
+
+ useEffect(()=>{
+  if(!isLoggedIn){
+    setOpenDialog(true);
+    return ;
+  }
+ })
  // Handle the Chnages in the user Selection.
  const handleChange = (name, value) => {
-  
-  console.log(name, value);
   setFormData({ ...formData, [name]:value });
 };
 //Handle Submit
 const handleSubmit = async(e)=>{
   e.preventDefault();
-  setFormData({ ...formData, ['budget']:budget, ['category'] :category});
-  if(!formData['tittle'] || !formData['Source'] || !!formData['Destination'] || !formData['No. of Days'] || !formData['Travel Date']){
-    toast.error('All fields are Required');
+  if(!user){
+    toast.error('Please Login to Continue');
     return ;
   }
+  if(!formData['tittle']){
+    toast.error('Tittle is Required');
+    return ;
+  }
+  if(!formData['Source']){
+    toast.error('Source is Required');
+    return ;
+  }
+  if(!formData['Destination']){
+    toast.error('Destination is Required');
+    return ;
+  }
+  if(!formData['startDate']){
+    toast.error('startDate is Required');
+    return ;
+  }
+  
   setCreatingTrip(true);
   try{
     const tripId = await createTripAPI(formData);
-    console.log('trip id is', tripId);
     setCreatingTrip(false);
     navigator(`/trip/${tripId}`);
   }catch(err){
@@ -57,6 +82,7 @@ const handleSubmit = async(e)=>{
   }
 
 }
+ 
  if(creatingTrip){
   return <LoadingTrip></LoadingTrip>
  }else{
@@ -74,11 +100,11 @@ const handleSubmit = async(e)=>{
 
           {/* 1. Destination */}
           <div className="w-full">
-            <label className="block text-xl font-semibold mb-3 text-gray-800">What is your destination of choice?</label>
-            <GooglePlacesAutocomplete
-              apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+            <label className="block text-xl font-semibold mb-3 text-gray-800">What is your source of choice?</label>
+            <input
+            type='text'
               name = "Source"
-              onPlaceSelected={(place) => handleChange('Source',place)}
+              onChange={(e) => handleChange('Source',e.target.value)}
               className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
               placeholder="Enter destination"
             />
@@ -86,11 +112,11 @@ const handleSubmit = async(e)=>{
 
           {/* 2. Source */}
           <div className="w-full">
-            <label className="block text-xl font-semibold mb-3 text-gray-800">What is your source of choice?</label>
-            <GooglePlacesAutocomplete
-              apiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}
+            <label className="block text-xl font-semibold mb-3 text-gray-800">What is your destination of choice?</label>
+            <input
+            type='text'
               name = 'Destination'
-              onPlaceSelected={(place) => handleChange('Destination',place)}
+              onChange={(e) => handleChange('Destination',e.target.value)}
               className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400"
               placeholder="Enter source location"
             />
@@ -105,13 +131,13 @@ const handleSubmit = async(e)=>{
           {/* 4. Travel Date */}
           <div className="w-full">
             <label className="block text-xl font-semibold mb-3 text-gray-800">Travel Date</label>
-            <input type="date" className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400" name='Travel Date' onChange={(e)=>handleChange('Travel Date', e.target.value)}/>
+            <input type="date" className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400" name='Travel Date' onChange={(e)=>handleChange('startDate', e.target.value)}/>
           </div>
 
           {/* 5. Return Date (optional) */}
           <div className="w-full">
             <label className="block text-xl font-semibold mb-3 text-gray-800">Return Date <span className='text-gray-400'>(optional)</span></label>
-            <input type="date" className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400" name='return Date' onChange={(e)=>handleChange('Return Date', e.target.value)}/>
+            <input type="date" className="w-full px-4 py-3 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-400" name='return Date' onChange={(e)=>handleChange('endDate', e.target.value)}/>
           </div>
 
           {/* 6. Budget Selector */}
@@ -123,7 +149,7 @@ const handleSubmit = async(e)=>{
                   type="button"
                   key={opt.value}
                   className={`flex flex-col items-center justify-center px-8 py-5 rounded-xl border-2 transition-all duration-150 shadow-sm text-xl font-semibold cursor-pointer bg-white hover:bg-orange-100 focus:outline-none ${budget === opt.value ? 'border-orange-500 bg-orange-100' : 'border-gray-200'}`}
-                  onClick={() => handleChange('budget', opt.value)}
+                  onClick={() => {setBudget(opt.value); handleChange('budget', opt.value)}}
                 >
                   <span className="text-4xl mb-2">{opt.emoji}</span>
                   <span>{opt.label}</span>
@@ -142,7 +168,7 @@ const handleSubmit = async(e)=>{
                   type="button"
                   key={opt.value}
                   className={`flex flex-col items-center justify-center px-8 py-5 rounded-xl border-2 transition-all duration-150 shadow-sm text-xl font-semibold cursor-pointer bg-white hover:bg-orange-100 focus:outline-none ${category === opt.value ? 'border-orange-500 bg-orange-100' : 'border-gray-200'}`}
-                  onClick={() => handleChange('category', opt.value)}
+                  onClick={() =>{setCategory(opt.value); handleChange('category', opt.value)} }
                 >
                   <span className="text-4xl mb-2">{opt.emoji}</span>
                   <span>{opt.label}</span>
@@ -159,7 +185,11 @@ const handleSubmit = async(e)=>{
           </div>
         </form>
       </div>
+      {openDialog && (
+        <AuthDialog setOpenDialog={setOpenDialog} route={'/create-trip'}/>
+      )}
     </div>
+    
   )
  }
 

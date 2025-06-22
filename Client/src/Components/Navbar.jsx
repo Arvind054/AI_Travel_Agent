@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import Logo from '../assets/Logo.svg';
 import { useSelector } from 'react-redux';
-
+import { useNavigate } from 'react-router';
 const Navbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const isLoggedIn = useSelector((state) => state.user.isAuthenticated);
-
+  const user = useSelector((state) => state.user.user);
+  const navigator = useNavigate();
   return (
     <>
       {/* Navbar */}
@@ -22,35 +23,35 @@ const Navbar = () => {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-4">
-              <a
-                href="/all-trips"
+              <button
+                onClick={()=>navigator("/all-trips")}
                 className="rounded-full px-5 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 transition"
               >
                 My Trips
-              </a>
-              <a
-                href="/create-trip"
+              </button>
+              <button
+               onClick={()=>{navigator("/create-trip")}}
                 className="rounded-full px-5 py-2 text-base font-medium bg-orange-500 text-white hover:bg-orange-600 shadow transition"
               >
                 + Create Trip
-              </a>
+              </button>
               {!isLoggedIn ? (
-                <a
-                  href="/login"
-                  className="rounded-full px-5 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 transition"
+                <button
+                  onClick={()=>navigator("/login")}
+                  className="rounded-full  text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 transition"
                 >
                   Login
-                </a>
+                </button>
               ) : (
-                <a
-                  href="/profile"
-                  className="rounded-full px-5 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 transition"
-                >
-                  Profile
-                </a>
+
+                <img
+                  src={user.picture}
+                  alt="Profile Picture"
+                  className="w-10 h-10 rounded-full object-cover cursor-pointer hover:scale-105 transition"
+                />
+
               )}
             </div>
-
             {/* Mobile Hamburger */}
             <div className="md:hidden flex items-center">
               <button
@@ -72,9 +73,8 @@ const Navbar = () => {
 
       {/* Mobile Sidebar */}
       <div
-        className={`fixed inset-y-0 right-0 transform ${
-          isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
-        } w-64 bg-white shadow-xl transition-transform duration-300 ease-in-out z-50`}
+        className={`fixed inset-y-0 right-0 transform ${isSidebarOpen ? 'translate-x-0' : 'translate-x-full'
+          } w-64 bg-white shadow-xl transition-transform duration-300 ease-in-out z-50`}
       >
         <div className="flex justify-end p-4">
           <button
@@ -88,36 +88,35 @@ const Navbar = () => {
           </button>
         </div>
         <div className="px-4 py-6 space-y-4">
-          <a
-            href="/all-trips"
-            onClick={() => setIsSidebarOpen(false)}
+          <button
+            onClick={() => {setIsSidebarOpen(false); navigator("/all-trips")}}
             className="block w-full px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 rounded-full transition"
           >
             My Trips
-          </a>
-          <a
-            href="/create-trip"
-            onClick={() => setIsSidebarOpen(false)}
+          </button>
+          <button
+  
+            onClick={() => {setIsSidebarOpen(false); navigator("/create-trip")}}
             className="block w-full px-4 py-2 text-base font-medium text-white bg-orange-500 hover:bg-orange-600 rounded-full transition shadow"
           >
             + Create Trip
-          </a>
+          </button>
           {!isLoggedIn ? (
-            <a
-              href="/login"
-              onClick={() => setIsSidebarOpen(false)}
+            <button
+              onClick={() => {setIsSidebarOpen(false); navigator("/login")}}
               className="block w-full px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 rounded-full transition"
             >
               Login
-            </a>
+            </button>
           ) : (
-            <a
-              href="/profile"
-              onClick={() => setIsSidebarOpen(false)}
-              className="block w-full px-4 py-2 text-base font-medium text-gray-700 hover:text-black hover:bg-orange-100 rounded-full transition"
-            >
-              Profile
-            </a>
+            <div className='flex items-center justify-center gap-5'>
+            <img
+                  src={user.picture}
+                  alt="Profile Picture"
+                  className="w-10 h-10 rounded-full object-cover cursor-pointer hover:scale-105 transition"
+                />
+                <span>{user?.name}</span>
+                </div>
           )}
         </div>
       </div>

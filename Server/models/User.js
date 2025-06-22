@@ -6,7 +6,7 @@ const UserSchema = new mongoose.Schema({
       required: true,
     },
     email : {
-        type: Email,
+        type: String,
         required: true,
     },
     trips:[
@@ -18,4 +18,4 @@ const UserSchema = new mongoose.Schema({
     ]
 });
 
-module.exports = mongoose.model('User', UserSchema);
+module.exports = mongoose.model('TripUser', UserSchema);

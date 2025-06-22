@@ -2,13 +2,21 @@ import React, { useEffect, useState } from 'react';
 import LoadingAllTrips from './Loaders/LoadingAllTrips';
 import { getAllTrips } from '../Store/API/tripApi';
 import { useNavigate } from 'react-router';
-
+import { useSelector } from 'react-redux';
+import { getUserProfile } from '../Store/API/userApi';
+import { useDispatch } from 'react-redux';
+import AuthDialog from './Auth/AuthDialog'
 const AllTrips = () => {
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-
+  const isLoggedIn = useSelector((state) => state.user.isAuthenticated);
+  const [openDialog, setOpenDialog] = useState(false);
   useEffect(() => {
+    if(!isLoggedIn){
+       setOpenDialog(true);
+       return ;
+    }
     const fetchTrips = async () => {
       try {
         const data = await getAllTrips();
@@ -20,10 +28,10 @@ const AllTrips = () => {
       }
     };
     fetchTrips();
-  }, []);
-
+  },  []);
+  if(!isLoggedIn)return <AuthDialog setOpenDialog={setOpenDialog} route={"all-trips"}/>;
   if (loading) return <LoadingAllTrips />;
-
+   
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 px-6 py-10">
       <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
@@ -62,6 +70,9 @@ const AllTrips = () => {
             </li>
           ))}
         </ul>
+      )}
+      {openDialog && (
+        <AuthDialog setOpenDialog={setOpenDialog} route={"all-trips"}/>
       )}
     </div>
   );

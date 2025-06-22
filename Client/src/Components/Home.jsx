@@ -1,12 +1,39 @@
-import React from 'react'
-import HomeImage from '../assets/HomeImage.png'
-import { useNavigate } from 'react-router'
+import React, { useEffect, useState } from 'react';
+import HomeImage from '../assets/HomeImage.png';
+import { useNavigate } from 'react-router';
+import { useSelector } from 'react-redux';
+import { getUserProfile } from '../Store/API/userApi';
+import { useDispatch } from "react-redux";
+import AuthDialog from './Auth/AuthDialog';
 const Home = () => {
   const navigator = useNavigate();
+  const dispatch = useDispatch();
+  const [openDialog, setOpenDialog] = useState(false);
+  const isLoggedIn = useSelector((state) => state.user.isAuthenticated);
+
+  useEffect(() => {
+    if (isLoggedIn) return;
+  
+    const tokenInfo = JSON.parse(localStorage.getItem('VerificationToken'));
+    if (tokenInfo) {
+      getUserProfile(tokenInfo, dispatch);
+    }
+  }, []);
+  
+  const handleCreateTrip = () => {
+    if (!isLoggedIn) {
+      setOpenDialog(true);
+      return;
+    }
+    navigator('/create-trip');
+  };
+ 
+ 
   return (
     <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
         <div className="flex flex-col items-center">
+
           {/* Hero Section */}
           <div className="text-center max-w-4xl mx-auto space-y-6 mb-12">
             <h1 className="text-4xl md:text-6xl font-bold text-black leading-tight">
@@ -17,14 +44,17 @@ const Home = () => {
               Your Personal AI Trip Planner🏖️
             </h2>
             <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
-              Your personal trip planner and travel curator, creating custom itineraries 
+              Your personal trip planner and travel curator, creating custom itineraries
               tailored to your interests and budget.
             </p>
           </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 mb-12">
-            <button className="px-8 py-4 bg-orange-500 text-white text-lg font-semibold rounded-full hover:bg-orange-600 transform hover:scale-105 transition duration-300 shadow-lg" onClick={()=>navigator('/create-trip')}>
+            <button
+              className="px-8 py-4 bg-orange-500 text-white text-lg font-semibold rounded-full hover:bg-orange-600 transform hover:scale-105 transition duration-300 shadow-lg"
+              onClick={handleCreateTrip}
+            >
               Get Started for Free ✈️
             </button>
             <button className="px-8 py-4 bg-white text-black text-lg font-semibold rounded-full border-2 border-orange-500 hover:bg-orange-50 transform hover:scale-105 transition duration-300 shadow-md">
@@ -47,12 +77,15 @@ const Home = () => {
               </div>
             ))}
           </div>
-
-        
         </div>
       </div>
-    </div>
-  )
-}
 
-export default Home
+      {/* Authentication Dialog */}
+      {openDialog && (
+        <AuthDialog setOpenDialog={setOpenDialog} route={'create-trip'}/>
+      )}
+    </div>
+  );
+};
+
+export default Home;
