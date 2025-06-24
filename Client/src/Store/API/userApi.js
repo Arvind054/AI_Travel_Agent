@@ -1,7 +1,9 @@
+//User Related API's
 import axios from 'axios';
 import { login } from '../Slice/userSlice';
 import  toast  from 'react-hot-toast';
 
+//To get the user Profile From the Token by oAuth
 export const getUserProfile = async (tokenInfo, dispatch) => {
   try {
     const response = await axios.get(

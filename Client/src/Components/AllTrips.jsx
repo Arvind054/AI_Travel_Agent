@@ -11,6 +11,7 @@ const AllTrips = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const isLoggedIn = useSelector((state) => state.user.isAuthenticated);
+  const user = useSelector((state)=>state.user.user);
   const [openDialog, setOpenDialog] = useState(false);
   useEffect(() => {
     if(!isLoggedIn){
@@ -19,7 +20,8 @@ const AllTrips = () => {
     }
     const fetchTrips = async () => {
       try {
-        const data = await getAllTrips();
+         const userData = user
+        const data = await getAllTrips(userData);
         setTrips(data);
       } catch (err) {
         console.error("Failed to fetch trips:", err);
@@ -60,12 +62,15 @@ const AllTrips = () => {
               className="p-6 rounded-xl bg-white shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 cursor-pointer"
               onClick={() => navigate(`/trip/${trip._id}`)}
             >
-              <h3 className="text-xl font-semibold text-blue-800">{trip.destination}</h3>
-              <p className="text-sm text-gray-600">
-                {trip.startDate} – {trip.endDate}
+              <h3 className="text-xl font-semibold text-blue-800">{trip.title}</h3>
+              <p className="text-md text-green-600 m-2">
+                {trip.source} - {trip.destination}
+              </p>
+              <p className="text-sm text-gray-600 m-2">
+                {trip.createdAt?.slice(0,10)}
               </p>
               <div className="mt-3 text-sm text-gray-500">
-                {trip.description?.slice(0, 80) || "Your upcoming journey awaits..."}
+                { "Click to View"}
               </div>
             </li>
           ))}

@@ -6,7 +6,11 @@ const Trip = require('../models/Trip');
 const TripUser = require('../models/User')
 //Create New Trip
 router.post('/create-trip', async (req, res) => {
-    const tripDetails = req.body;
+    const {tripDetails,userData} = req.body;
+   if(!tripDetails){
+    res.status(401).json('Please enter trip details');
+    return ;
+   }
     try {
       const prompt = `
   You are a helpful travel agent. Create a **detailed personalized travel itinerary** from the following details:
@@ -41,15 +45,25 @@ router.post('/create-trip', async (req, res) => {
   }
   ONLY return JSON. Do not include any additional explanation.
   `;
-  
+    
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
     contents: prompt,
   });
 
       const text = response.text;
-      const currentTrip = await Trip.create({title: tripDetails?.tittle|| "Test Trip", tripDetails: text});
+      const currentTrip = await Trip.create({
+        title: tripDetails?.tittle|| "Test Trip",
+        source:tripDetails.Source,
+        destination: tripDetails.Destination,
+        tripDetails: text});
       await currentTrip.save();
+      let user = await TripUser.findOne({ email: userData.email });
+      if(!user){
+        user = await TripUser.create({name: userData.name, email:userData.email});
+      }
+      user.trips.unshift(currentTrip);
+      await user.save();
       res.setHeader('Content-Type', 'application/json');
       res.json({data:currentTrip});
     } catch (err) {
@@ -61,9 +75,14 @@ router.post('/create-trip', async (req, res) => {
 
  // Get All the Trips of the user
 router.get('/all-trips', async(req, res)=>{
-   const userId = req.body;
+   const {email} = req.query;
+   if(!email){
+    res.status(401).send("User Not Found");
+    return ;
+   }
    try{
-
+       const user = await TripUser.findOne({email: email}).populate('trips');
+      res.json(user);
    }catch(err){
       res.status(401).send('Error Getting Your Trips');
    }

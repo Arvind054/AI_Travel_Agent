@@ -37,14 +37,14 @@ function TripDetails() {
     <div className="p-6 max-w-6xl mx-auto font-sans text-gray-800">
       <h1 className="text-4xl font-extrabold text-center mb-8 text-indigo-700 tracking-tight">🌍 Your Travel Itinerary</h1>
 
-      {parsedTrip.itinerary.map((day, index) => (
+      {parsedTrip?.itinerary?.map((day, index) => (
         <div key={index} className="mb-10 bg-white shadow-xl rounded-3xl p-6 border border-gray-200 transition-transform hover:scale-[1.01] duration-300">
-          <h2 className="text-2xl font-bold text-blue-600 mb-4">{day.day}</h2>
+          <h2 className="text-2xl font-bold text-blue-600 mb-4">{day?.day}</h2>
 
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">📌 Activities</h3>
             <ul className="list-disc pl-6 space-y-1 text-gray-700">
-              {day.activities.map((activity, idx) => (
+              {day?.activities.map((activity, idx) => (
                 <li key={idx}>{activity}</li>
               ))}
             </ul>
@@ -54,12 +54,12 @@ function TripDetails() {
           <div className="mb-6">
             <h3 className="text-lg font-semibold text-gray-700 mb-2">🏨 Accommodation</h3>
             <div className="bg-indigo-50 rounded-xl p-4 border border-indigo-200">
-              <p><span className="font-medium">Name:</span> {day.accommodation.name}</p>
-              <p><span className="font-medium">Address:</span> {day.accommodation.address}</p>
-              {day.accommodation.rating && <p><span className="font-medium">Rating:</span> ⭐ {day.accommodation.rating}</p>}
-              <p><span className="font-medium">Price/Night:</span> {day.accommodation.price_per_night}</p>
+              <p><span className="font-medium">Name:</span> {day?.accommodation?.name}</p>
+              <p><span className="font-medium">Address:</span> {day?.accommodation?.address}</p>
+              {day?.accommodation?.rating && <p><span className="font-medium">Rating:</span> ⭐ {day?.accommodation?.rating}</p>}
+              <p><span className="font-medium">Price/Night:</span> {day?.accommodation?.price_per_night}</p>
 
-              {day.accommodation.amenities.length > 0 && (
+              {day?.accommodation?.amenities?.length > 0 && (
                 <div className="mt-3">
                   <p className="font-medium mb-1">✨ Amenities:</p>
                   <div className="flex flex-wrap gap-2">

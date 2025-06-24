@@ -5,6 +5,14 @@ const TripSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  source:{
+    type: String,
+    require: true,
+  },
+  destination:{
+      type: String,
+      required: true,
+  },
   tripDetails: {
     type: mongoose.Schema.Types.Mixed, 
     required: true,
