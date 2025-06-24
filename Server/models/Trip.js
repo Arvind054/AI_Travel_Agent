@@ -1,3 +1,4 @@
+//Trip Schema
 const mongoose = require('mongoose');
 
 const TripSchema = new mongoose.Schema({
